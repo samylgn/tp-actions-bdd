@@ -1,0 +1,36 @@
+name: Pipeline Integration Continue
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Récupérer le code
+      - name: Recuperer le code du depot
+        uses: actions/checkout@v4
+
+      # Étape 2 : Préparer la base de données PostgreSQL
+      - name: Preparer la base de donnees
+        run: bash db/setup.sh
+
+      # Étape 3 : Installer Python 3.12 via l'action officielle
+      - name: Configurer Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Étape 4 : Installer les dépendances (Ajoute le working-directory)
+      - name: Installer les dependances
+        working-directory: python-app
+        run: pip install -r requirements.txt
+
+      # Étape 5 : Lancer les tests (Ajoute le working-directory)
+      - name: Executer les tests avec pytest
+        working-directory: python-app
+        run: pytest -v
