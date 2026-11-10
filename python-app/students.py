@@ -16,6 +16,14 @@ def get_student(conn, name):
         return cur.fetchone()
 
 def average_grade(conn):
-    """Calcule la moyenne des notes (À laisser non implémenté pour le moment !)."""
-    # On lève volontairement l'erreur demandée par la consigne pour faire échouer le test
-    raise NotImplementedError("La fonction average_grade n'est pas encore écrite")
+    """Calcule la moyenne des notes."""
+    with conn.cursor() as cur:
+        # 1. Requête SQL pour récupérer la moyenne de la colonne grade
+        cur.execute("SELECT AVG(grade) FROM students;")
+        
+        # 2. Récupère la première ligne du résultat
+        row = cur.fetchone()
+        
+        # row contient un tuple, par exemple (12.0,). On extrait le premier élément row[0]
+        # Si la table est vide, row[0] vaudra None, sinon on retourne la valeur convertie en float
+        return float(row[0]) if row[0] is not None else 0.0
