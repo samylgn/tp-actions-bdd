@@ -1,0 +1,22 @@
+name: Premier test de base de donnees
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  db:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Récupérer le code
+      - name: Recuperer le code du depot
+        uses: actions/checkout@v4
+
+      # Étape 2 : Préparer la base (À toi d'écrire le 'run')
+      - name: Preparer la base de donnees
+        run: bash db/setup.sh
+
+      # Étape 3 : Afficher les étudiants (À toi d'écrire le 'run')
+      - name: Afficher les etudiants
+        run: PGPASSWORD=postgres psql -h localhost -U postgres -d tp -c "SELECT * FROM students;"
