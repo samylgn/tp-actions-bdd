@@ -2,13 +2,16 @@ name: Pipeline Integration Continue
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   python:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
 
     steps:
       # Étape 1 : Récupérer le code
@@ -19,11 +22,11 @@ jobs:
       - name: Preparer la base de donnees
         run: bash db/setup.sh
 
-      # Étape 3 : Installer Python 3.12 via l'action officielle
-      - name: Configurer Python 3.12
+      # Étape 3 : Installer Python 3.10 et 3.12 via l'action officielle
+      - name: Configurer Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       # Étape 4 : Installer les dépendances (Ajoute le working-directory)
       - name: Installer les dependances
@@ -101,3 +104,24 @@ jobs:
       - name: Executer les test php
         working-directory: php-app
         run: vendor/bin/phpunit tests
+
+    build:
+      runs-on: ubuntu-latest
+      needs: [python, node, java, php]
+
+      steps:
+        - name: Construction de l'application
+          run: echo "Build réussi ! Tous les tests sont validés."
+
+    deploy:
+      runs-on: ubuntu-latest
+      needs: build
+
+      if: github.ref == 'refs/heads/main'
+      steps:
+        - name: Deploiment en cours
+          env:
+            TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          run: |
+            echo "Déploiment en cours"
+            test -n "$TOKEN" && echo "Token présent"
