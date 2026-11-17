@@ -105,23 +105,23 @@ jobs:
         working-directory: php-app
         run: vendor/bin/phpunit tests
 
-    build:
-      runs-on: ubuntu-latest
-      needs: [python, node, java, php]
+  build:
+    runs-on: ubuntu-latest
+    needs: [python, node, java, php]
 
-      steps:
-        - name: Construction de l'application
-          run: echo "Build réussi ! Tous les tests sont validés."
+    steps:
+      - name: Construction de l'application
+        run: echo "Build réussi ! Tous les tests sont validés."
 
-    deploy:
-      runs-on: ubuntu-latest
-      needs: build
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
 
-      if: github.ref == 'refs/heads/main'
-      steps:
-        - name: Deploiment en cours
-          env:
-            TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-          run: |
-            echo "Déploiment en cours"
-            test -n "$TOKEN" && echo "Token présent"
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploiment en cours
+        env:
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Déploiment en cours"
+          test -n "$TOKEN" && echo "Token présent"
